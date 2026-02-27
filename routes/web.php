@@ -1,8 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
-// Route::get('/', function () {
+use App\Http\Controllers\Admin\RoleController;// Route::get('/', function () {
 //     return view('welcome');
 // });
 
@@ -17,3 +16,5 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
+
+Route::resource('admin/roles', RoleController::class)->names('admin.roles');
