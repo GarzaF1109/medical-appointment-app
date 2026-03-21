@@ -4,7 +4,7 @@
     ['name' => 'Editar'],
 ]">
     <div class="max-w-2xl bg-white rounded-lg shadow p-6">
-        <form action="{{ route('admin.roles.store') }}" method="POST">
+        <form action="{{ route('admin.roles.update', $role) }}" method="POST">
         
             @csrf
             @method('PUT')
