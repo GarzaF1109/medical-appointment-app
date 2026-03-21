@@ -4,8 +4,7 @@
         <i class="fa-solid fa-pen-to-square mr-1"></i> Editar
     </a>
 
-    <form action="{{ route('admin.roles.destroy', $role) }}" method="POST" 
-          onsubmit="return confirm('¿Estás seguro de eliminar este rol?')">
+    <form action="{{ route('admin.roles.destroy', $role) }}" method="POST" class="delete-form">
         @csrf
         @method('DELETE')
         <button type="submit" 

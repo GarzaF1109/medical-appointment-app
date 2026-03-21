@@ -62,6 +62,18 @@ class RoleController extends Controller
 
     public function destroy(Role $role)
     {
+        $protectedRoles = ['Admin', 'Doctor', 'Paciente', 'Recepcionista', 'Super administrador'];
+
+        if (in_array($role->name, $protectedRoles)) {
+            session()->flash('swal', [
+                'icon' => 'error',
+                'title' => 'Error',
+                'text' => 'No puedes eliminar este rol'
+            ]);
+
+            return redirect(route('admin.roles.index'));
+        }
+
         $role->delete();
 
         return redirect()->route('admin.roles.index')
