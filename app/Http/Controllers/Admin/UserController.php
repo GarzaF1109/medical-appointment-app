@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
@@ -52,9 +53,16 @@ class UserController extends Controller
 
         session()->flash('swal', [
             'icon' => 'success',
-            'title' => 'Usuario creado correctamente',
-            'text' => 'El usuario ha sido creado correctamente'
+            'title' => 'Usuario creado',
+            'text' => 'El usuario ha sido creado exitosamente'
         ]);
+
+        //Si el usuario creado es un paciente, envía al módulo pacientes
+        if ($user->hasRole('Paciente')) {
+            $patient = Patient::create(['user_id' => $user->id]);
+
+            return redirect()->route('admin.patients.index')->with('success', 'Patient created successfully.');
+        }
 
         return redirect(route('admin.users.index'));
     }
