@@ -10,7 +10,7 @@
             </button>
             <a href="/" class="flex ms-2 md:me-24">
             <img src="/images/Moowka.png" class="h-9 me-3" alt="Moowka Logo" />
-            <span class="self-center text-lg font-semibold whitespace-nowrap dark:text-white">Moowka</span>
+            <span class="self-center text-lg font-semibold whitespace-nowrap">Healthify</span>
             </a>
         </div>
         <div class="flex items-center">
