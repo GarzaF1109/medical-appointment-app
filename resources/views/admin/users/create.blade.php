@@ -55,7 +55,12 @@
             </div>
 
             <div class="mt-4">
-                <x-select label="Rol" name="role" placeholder="Seleccione un rol" hint="Define los permisos y accesos del usuario" :options="$roles->map(fn($r) => ['label' => $r->name, 'value' => $r->id])->toArray()" option-label="label" option-value="value" />
+                <x-native-select label="Rol" name="role" hint="Define los permisos y accesos del usuario">
+                    <option value="">Seleccione un rol</option>
+                    @foreach($roles as $r)
+                        <option value="{{ $r->id }}" {{ old('role') == $r->id ? 'selected' : '' }}>{{ $r->name }}</option>
+                    @endforeach
+                </x-native-select>
                 @error('role')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror

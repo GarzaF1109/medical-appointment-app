@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -59,9 +60,14 @@ class UserController extends Controller
 
         //Si el usuario creado es un paciente, envía al módulo pacientes
         if ($user->hasRole('Paciente')) {
-            $patient = Patient::create(['user_id' => $user->id]);
+            Patient::create(['user_id' => $user->id]);
+            return redirect()->route('admin.patients.index');
+        }
 
-            return redirect()->route('admin.patients.index')->with('success', 'Patient created successfully.');
+        //Si el usuario creado es un doctor, envía al módulo doctores
+        if ($user->hasRole('Doctor')) {
+            Doctor::create(['user_id' => $user->id]);
+            return redirect()->route('admin.doctors.index');
         }
 
         return redirect(route('admin.users.index'));
@@ -107,6 +113,24 @@ class UserController extends Controller
 
         $role = Role::findById($request->role);
         $user->syncRoles($role);
+
+        // Limpiar relaciones anteriores si cambió de rol
+        if (!$user->hasRole('Paciente') && $user->patient) {
+            $user->patient->delete();
+        }
+        if (!$user->hasRole('Doctor') && $user->doctor) {
+            $user->doctor->delete();
+        }
+
+        // Crear registro de paciente si se asigna rol Paciente
+        if ($user->hasRole('Paciente') && !$user->patient) {
+            Patient::create(['user_id' => $user->id]);
+        }
+
+        // Crear registro de doctor si se asigna rol Doctor
+        if ($user->hasRole('Doctor') && !$user->doctor) {
+            Doctor::create(['user_id' => $user->id]);
+        }
 
         session()->flash('swal', [
             'icon' => 'success',
