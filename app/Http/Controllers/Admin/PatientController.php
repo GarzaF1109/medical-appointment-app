@@ -66,9 +66,6 @@ class PatientController extends Controller
             'emergency_contact_name' => 'nullable|string|max:255',
             'emergency_contact_phone' => 'nullable|string|max:20',
             'emergency_contact_relationship' => 'nullable|string|max:255',
-        ], [
-            'emergency_contact_phone.max' => 'El campo teléfono del contacto no debe ser mayor que 20 caracteres.',
-            'observations.max' => 'El campo observaciones no debe ser mayor que 255 caracteres.',
         ]);
 
         $patient->update($request->only([
