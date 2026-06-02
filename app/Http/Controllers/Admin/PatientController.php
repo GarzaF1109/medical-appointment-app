@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdatePatientRequest;
 use App\Models\BloodType;
 use App\Models\Patient;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PatientController extends Controller
 {
@@ -46,47 +49,50 @@ class PatientController extends Controller
      */
     public function edit(Patient $patient)
     {
-        $patient->load('user', 'bloodType');
-        $bloodTypes = BloodType::all();
-        return view('admin.patients.edit', compact('patient', 'bloodTypes'));
+        try {
+            $patient->load('user', 'bloodType');
+            $bloodTypes = BloodType::all();
+
+            return view('admin.patients.edit', compact('patient', 'bloodTypes'));
+        } catch (\Exception $e) {
+            Log::error('Error al cargar el formulario de edición del paciente: ' . $e->getMessage());
+
+            session()->flash('swal', [
+                'icon' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo cargar la información del paciente. Inténtalo de nuevo.',
+            ]);
+
+            return redirect()->route('admin.patients.index');
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Patient $patient)
+    public function update(UpdatePatientRequest $request, Patient $patient)
     {
-        $request->validate([
-            'allergies' => 'nullable|string|max:255',
-            'chronic_conditions' => 'nullable|string|max:255',
-            'surgical_history' => 'nullable|string|max:255',
-            'family_history' => 'nullable|string|max:255',
-            'blood_type_id' => 'nullable|exists:blood_types,id',
-            'observations' => 'nullable|string|max:255',
-            'emergency_contact_name' => 'nullable|string|max:255',
-            'emergency_contact_phone' => 'nullable|string|max:20',
-            'emergency_contact_relationship' => 'nullable|string|max:255',
-        ]);
+        try {
+            $patient->update($request->validated());
 
-        $patient->update($request->only([
-            'allergies',
-            'chronic_conditions',
-            'surgical_history',
-            'family_history',
-            'blood_type_id',
-            'observations',
-            'emergency_contact_name',
-            'emergency_contact_phone',
-            'emergency_contact_relationship',
-        ]));
+            session()->flash('swal', [
+                'icon' => 'success',
+                'title' => 'Paciente actualizado',
+                'text' => 'El paciente ha sido actualizado correctamente.',
+            ]);
 
-        session()->flash('swal', [
-            'icon' => 'success',
-            'title' => 'Paciente actualizado',
-            'text' => 'El paciente ha sido actualizado correctamente',
-        ]);
+            return redirect()->route('admin.patients.edit', $patient);
+        } catch (\Exception $e) {
+            Log::error('Error al actualizar el paciente #' . $patient->id . ': ' . $e->getMessage());
 
-        return redirect()->route('admin.patients.edit', $patient);
+            session()->flash('swal', [
+                'icon' => 'error',
+                'title' => 'Error',
+                'text' => 'Ocurrió un error inesperado al actualizar el paciente. Inténtalo de nuevo.',
+            ]);
+
+            return redirect()->back()->withInput();
+        }
     }
 
     /**
@@ -94,6 +100,26 @@ class PatientController extends Controller
      */
     public function destroy(Patient $patient)
     {
-        //
+        try {
+            $patient->delete();
+
+            session()->flash('swal', [
+                'icon' => 'success',
+                'title' => 'Paciente eliminado',
+                'text' => 'El paciente ha sido eliminado correctamente.',
+            ]);
+
+            return redirect()->route('admin.patients.index');
+        } catch (\Exception $e) {
+            Log::error('Error al eliminar el paciente #' . $patient->id . ': ' . $e->getMessage());
+
+            session()->flash('swal', [
+                'icon' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el paciente. Inténtalo de nuevo.',
+            ]);
+
+            return redirect()->route('admin.patients.index');
+        }
     }
 }
