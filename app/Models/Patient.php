@@ -28,4 +28,9 @@ class Patient extends Model
     {
         return $this->belongsTo(BloodType::class);
     }
+
+    public function insurances()
+    {
+        return $this->belongsToMany(Insurance::class)->withPivot('member_number')->withTimestamps();
+    }
 }

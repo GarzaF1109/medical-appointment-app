@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\DoctorController;
 use App\Http\Controllers\Admin\AppointmentController;
+use App\Http\Controllers\Admin\InsuranceController;
 
 Route::get('/', function () {
     return view ('admin.dashboard');
@@ -21,3 +22,4 @@ Route::get('doctors/{doctor}/schedules', function (\App\Models\Doctor $doctor) {
     $doctor->load('user', 'speciality');
     return view('admin.doctors.schedules', compact('doctor'));
 })->name('doctors.schedules');
+Route::resource('insurances', InsuranceController::class);

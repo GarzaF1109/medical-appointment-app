@@ -50,7 +50,7 @@ class PatientController extends Controller
     public function edit(Patient $patient)
     {
         try {
-            $patient->load('user', 'bloodType');
+            $patient->load('user', 'bloodType', 'insurances');
             $bloodTypes = BloodType::all();
 
             return view('admin.patients.edit', compact('patient', 'bloodTypes'));
@@ -101,12 +101,16 @@ class PatientController extends Controller
     public function destroy(Patient $patient)
     {
         try {
+            $insuranceCount = $patient->insurances()->count();
+            $patient->insurances()->detach();
             $patient->delete();
+
+            $extra = $insuranceCount > 0 ? " Se desvincularon {$insuranceCount} convenio(s) de seguro." : '';
 
             session()->flash('swal', [
                 'icon' => 'success',
                 'title' => 'Paciente eliminado',
-                'text' => 'El paciente ha sido eliminado correctamente.',
+                'text' => 'El paciente ha sido eliminado correctamente.' . $extra,
             ]);
 
             return redirect()->route('admin.patients.index');

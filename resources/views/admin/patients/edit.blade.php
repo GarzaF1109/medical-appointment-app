@@ -68,6 +68,9 @@
                         <x-tab-button name="emergencia" icon="fa-solid fa-heart" :hasErrors="$hasErrorsEmergencia">
                             Contacto de emergencia
                         </x-tab-button>
+                        <x-tab-button name="seguros" icon="fa-solid fa-shield-halved">
+                            Seguros
+                        </x-tab-button>
                     </nav>
                 </div>
 
@@ -210,6 +213,11 @@
                             @enderror
                         </div>
                     </div>
+                </x-tab-panel>
+
+                {{-- Tab 5: Seguros --}}
+                <x-tab-panel name="seguros">
+                    @livewire('admin.patient-insurances', ['patient' => $patient])
                 </x-tab-panel>
             </x-tab-container>
         </div>
